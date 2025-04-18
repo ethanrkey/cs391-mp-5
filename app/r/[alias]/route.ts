@@ -1,21 +1,15 @@
 import { MongoClient } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Define a clean type for context manually
-type RouteContext = {
-  params: {
-    alias: string;
-  };
-};
-
 const client = new MongoClient(process.env.MONGODB_URI!);
 const db = client.db('url-shortener');
 
-export async function GET(
-  req: NextRequest,
-  context: RouteContext
-) {
-  const alias = context.params.alias;
+export async function GET(req: NextRequest, context: any) {
+  const alias = context?.params?.alias;
+
+  if (typeof alias !== 'string') {
+    return new NextResponse('Invalid alias', { status: 400 });
+  }
 
   const result = await db.collection('urls').findOne({ alias });
 
