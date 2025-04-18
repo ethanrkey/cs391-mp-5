@@ -14,17 +14,26 @@ function isValidUrl(url: string): boolean {
 }
 
 export async function POST(req: Request) {
-  const { url, alias } = await req.json();
-
-  if (!isValidUrl(url)) {
-    return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
-  }
-
-  const existing = await db.collection('urls').findOne({ alias });
-  if (existing) {
-    return NextResponse.json({ error: 'Alias already taken' }, { status: 409 });
-  }
-
-  await db.collection('urls').insertOne({ alias, url });
-  return NextResponse.json({ message: 'Short URL created', shortUrl: `/r/${alias}` });
+    const { url, alias } = await req.json();
+  
+    if (!url || typeof url !== 'string' || !isValidUrl(url)) {
+      return NextResponse.json({ error: 'Invalid or missing URL' }, { status: 400 });
+    }
+  
+    if (!alias || typeof alias !== 'string' || alias.trim() === '') {
+      return NextResponse.json({ error: 'Alias is required' }, { status: 400 });
+    }
+  
+    const existing = await db.collection('urls').findOne({ alias });
+  
+    if (existing) {
+      return NextResponse.json({ error: 'Alias already taken' }, { status: 409 });
+    }
+  
+    await db.collection('urls').insertOne({ alias, url });
+  
+    return NextResponse.json(
+      { message: 'Short URL created', shortUrl: `/r/${alias}` },
+      { status: 201 }
+    );
 }
