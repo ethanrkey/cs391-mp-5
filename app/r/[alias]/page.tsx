@@ -4,14 +4,8 @@ import { redirect } from 'next/navigation';
 const client = new MongoClient(process.env.MONGODB_URI!);
 const db = client.db('url-shortener');
 
-type Props = {
-  params: {
-    alias: string;
-  };
-};
-
-export default async function RedirectPage({ params }: Props) {
-  const { alias } = params;
+export default async function RedirectPage({ params }: any) {
+  const alias = params.alias as string;
 
   const result = await db.collection('urls').findOne({ alias });
 
