@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const client = new MongoClient(process.env.MONGODB_URI!);
 const db = client.db('url-shortener');
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function GET(req: NextRequest, context: any) {
   const alias = context?.params?.alias;
 
