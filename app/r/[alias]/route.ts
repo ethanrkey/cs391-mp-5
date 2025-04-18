@@ -4,8 +4,11 @@ import { NextRequest, NextResponse } from 'next/server';
 const client = new MongoClient(process.env.MONGODB_URI!);
 const db = client.db('url-shortener');
 
-export async function GET(req: NextRequest, context: any) {
-  const alias = context.params.alias;
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { alias: string } }
+) {
+  const alias = params.alias;
 
   const result = await db.collection('urls').findOne({ alias });
 
