@@ -1,22 +1,18 @@
-import { MongoClient } from 'mongodb';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import getCollection from '../../lib/db';
 
-const client = new MongoClient(process.env.MONGODB_URI!);
-const db = client.db('url-shortener');
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ alias: string }> }
+): Promise<NextResponse> {
+  const { alias } = await params;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function GET(req: NextRequest, context: any) {
-  const alias = context?.params?.alias;
+  const collection = await getCollection('links');
+  const link = await collection.findOne({ alias });
 
-  if (typeof alias !== 'string') {
-    return new NextResponse('Invalid alias', { status: 400 });
+  if (!link) {
+    return NextResponse.json({ error: 'doesnt exist' }, { status: 404 });
   }
 
-  const result = await db.collection('urls').findOne({ alias });
-
-  if (result?.url) {
-    return NextResponse.redirect(result.url);
-  }
-
-  return new NextResponse('Alias not found', { status: 404 });
+  return NextResponse.redirect(link.url);
 }
