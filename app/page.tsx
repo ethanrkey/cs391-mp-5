@@ -62,8 +62,8 @@ export default function HomePage() {
 
   return (
     <main className="p-8 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">URL Shortener</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <h1 className="text-4xl font-bold mb-4 pb-10 text-[#f5baba]">URL Shortener ✂️</h1>
+      <form onSubmit={handleSubmit} className="space-y-4 border-2 p-5 rounded-lg bg-[#1e1c2e]">
         <input
           type="text"
           placeholder="Full URL (https://...)"
@@ -85,7 +85,7 @@ export default function HomePage() {
 
       {error && <p className="text-red-500 mt-4">{error}</p>}
       {result && (
-        <p className="mt-4">
+        <p className="mt-4 text-2xl">
           Short URL: <a className="text-blue-700 underline" href={result} target="_blank">{result}</a>
         </p>
       )}
