@@ -8,17 +8,49 @@ export default function HomePage() {
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
 
+  const checkDomainExists = async (hostname: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(hostname)}`);
+      const data = await response.json();
+      return data.Answer && data.Answer.length > 0;
+    } catch (error) {
+      console.error("DNS lookup failed:", error);
+      return false;
+    }
+  };
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setResult('');
-
+  
+    // Basic protocol check
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      setError("URL must start with http:// or https://");
+      return;
+    }
+  
+    let parsed;
+    try {
+      parsed = new URL(url);
+    } catch {
+      setError("Invalid URL format");
+      return;
+    }
+  
+    const domainExists = await checkDomainExists(parsed.hostname);
+    if (!domainExists) {
+      setError("This domain doesn't exist or isn't properly configured");
+      return;
+    }
+  
+    // Submit to backend if URL is valid
     const res = await fetch('/api/shorten', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url, alias }),
     });
-
+  
     const data = await res.json();
     if (!res.ok) {
       setError(data.error);
@@ -26,6 +58,7 @@ export default function HomePage() {
       setResult(`${window.location.origin}${data.shortUrl}`);
     }
   };
+  
 
   return (
     <main className="p-8 max-w-xl mx-auto">
