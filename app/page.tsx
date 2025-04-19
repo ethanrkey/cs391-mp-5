@@ -85,7 +85,7 @@ export default function HomePage() {
 
       {error && <p className="text-red-500 mt-4">{error}</p>}
       {result && (
-        <p className="mt-4 text-2xl">
+        <p className="mt-4">
           Short URL: <a className="text-blue-700 underline" href={result} target="_blank">{result}</a>
         </p>
       )}
